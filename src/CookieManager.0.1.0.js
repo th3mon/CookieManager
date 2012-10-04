@@ -1,7 +1,5 @@
-(function(g, d, u, $) {
+(function(g, d, u) {
     var CookieManager = function() {};
-
-    CookieManager.prototype.Utils = g.gazeta_pl.mobi.Utils;
 
     CookieManager.init = function() {
         return new this();
@@ -9,7 +7,7 @@
 
     CookieManager.prototype.set = function() {
         var
-            self = this,
+            // self = this,
             args = arguments,
             cookieData,
             config,
@@ -35,8 +33,9 @@
                 }
 
                 if ("object" === typeof value) {
-                    if (self.Utils.isBrowserSupportsJSON()) {
-                        value = self.Utils.escapeKeysInObj(value);
+
+                    if (this.Utils.isBrowserSupportsJSON()) {
+                        value = this.Utils.escapeKeysInObj(value);
                         value = JSON.stringify(value);
                     } else {
                         throw {
@@ -149,5 +148,21 @@
         return new this.constructor();
     };
 
+    CookieManager.Utils = function() {};
+
+    CookieManager.Utils.prototype.isBrowserSupportsJSON = function() {
+        return !!("JSON" in window);
+    };
+
+    CookieManager.Utils.prototype.unescapeKeysInObj = function(o) {
+        var t = {};
+
+        for (key in o) {
+            t[decodeURIComponent(key)] = o[key];
+        }
+
+        return t;
+    };
+
     g.CookieManager = CookieManager;
-}(window, document, undefined, jQuery));
+}(window, document, undefined));

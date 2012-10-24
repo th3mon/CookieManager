@@ -1,5 +1,11 @@
 (function(g, d, u) {
-    var CookieManager = function() {};
+    var CookieManager = function(config) {
+        this.key = config && config.key;
+        this.key = config && config.name;
+        this.value = config && config.value;
+        this.expire = config && config.expire;
+        this.path = config && config.path;
+    };
 
     CookieManager.init = function() {
         return new this();
@@ -7,14 +13,14 @@
 
     CookieManager.prototype.set = function() {
         var
-            // self = this,
+            self = CookieManager,
             args = arguments,
             cookieData,
             config,
             name,
             value,
-            expireDays,
-            path,
+            expire = this.expire,
+            path = this.path,
 
             init = function() {
                 var t = {};
@@ -28,14 +34,14 @@
 
                     name = config.name;
                     value = config.value;
-                    expireDays = config.expireDays;
-                    path = config.path;
+                    expire = config.expire || expire;
+                    path = config.path || path;
                 }
 
                 if ("object" === typeof value) {
 
-                    if (this.Utils.isBrowserSupportsJSON()) {
-                        value = this.Utils.escapeKeysInObj(value);
+                    if (self.Utils.isBrowserSupportsJSON()) {
+                        value = self.Utils.escapeKeysInObj(value);
                         value = JSON.stringify(value);
                     } else {
                         throw {
@@ -49,23 +55,60 @@
             },
 
             prepareExpiryDate = function () {
-                if (expireDays) {
+                if (expire) {
                     var expireDate = new Date();
-                    expireDate.setDate(expireDate.getDate() + expireDays);
+                    expireDate.setDate(expireDate.getDate() + expire);
 
                     return expireDate.toUTCString();
                 }
             },
 
             execute = function() {
+                var expire = prepareExpiryDate(),
+                    keys = {
+                        expire: (function() {
+                            var
+                                separator = "-",
+
+                                e = (function() {
+                                    var t = new Date();
+                                        t.setDate(t.getDate( + expire));
+
+                                        return t; 
+                                }()),
+
+                                day = e.getDate(),
+                                month = e.getMonth() + 1,
+                                year = (function() {
+                                    var y = e.getYear();
+
+                                    if (y < 1000) {
+                                        y = y +1900;
+                                    }
+
+                                    return y;
+                                }());
+
+                            return day + separator + month + separator + year;
+                        }())
+                    };
+
                 cookieData = name + "=" + value;
 
-                if (expireDays) {
-                    cookieData += ";expires=" + prepareExpiryDate();
+                if (expire) {
+                    cookieData += ",expires=" + keys.expire;
                 }
 
                 if (path) {
-                    cookieData += "; path=" + path;
+                    cookieData += ",path=" + path;
+                }
+
+                if (expire) {
+                    cookieData += ";expires=" + expire;
+                }
+
+                if (path) {
+                    cookieData += ";path=" + path;
                 }
 
                 document.cookie = cookieData;
@@ -77,7 +120,7 @@
 
     CookieManager.prototype.get = function(name) {
         var
-            self = this,
+            self = CookieManager,
             nameEQ = name + "=",
             splittedCookie = document.cookie.split(";"),
             value = "",
@@ -126,19 +169,20 @@
         return ret;
     };
 
-    CookieManager.prototype.remove = function(conf) {
+    CookieManager.prototype.delete = function(conf) {
         var self = this;
 
         if ("string" === typeof conf) {
             self.set({
                 name: conf,
-                expireDays: -1
+                value: conf,
+                expire: -1
             });
         } else {
             self.set({
                 name: conf.name,
                 value: conf.value,
-                expireDays: -1,
+                expire: -1,
                 path: conf.path
             });
         }
@@ -148,17 +192,27 @@
         return new this.constructor();
     };
 
-    CookieManager.Utils = function() {};
+    CookieManager.Utils = {};
 
-    CookieManager.Utils.prototype.isBrowserSupportsJSON = function() {
+    CookieManager.Utils.isBrowserSupportsJSON = function() {
         return !!("JSON" in window);
     };
 
-    CookieManager.Utils.prototype.unescapeKeysInObj = function(o) {
+    CookieManager.Utils.unescapeKeysInObj = function(o) {
         var t = {};
 
         for (key in o) {
             t[decodeURIComponent(key)] = o[key];
+        }
+
+        return t;
+    };
+
+    CookieManager.Utils.escapeKeysInObj = function(o) {
+        var t = {};
+
+        for (key in o) {
+            t[encodeURIComponent(key)] = o[key];
         }
 
         return t;

@@ -1,0 +1,14 @@
+{
+    "framework": "mocha",
+    "src_files": [
+        "lib/*.js",
+        "src/CookieManager.0.1.1.js",
+        "tests/*.coffee"
+    ],
+    "serve_files": [
+        "lib/*.js",
+        "src/CookieManager.0.1.1.js",
+        "tests/*.js"
+    ],
+    "before_tests": "coffee -c ."
+}

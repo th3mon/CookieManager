@@ -1,11 +1,11 @@
 repo_name: th3mon/CookieManager
-report_id: 0f15101a7830c93b19a5e9a39b4c69f7
+report_id: f1c4cd19b5068520b0e25db311459b93
 repo_type: Public
-timestamp: '2023-11-09T12:43:35+00:00'
-requested_by: th3mon
+timestamp: '2023-12-14T09:26:29+00:00'
+requested_by: stack-file[bot]
 provider: github
 branch: master
-detected_tools_count: 4
+detected_tools_count: 5
 tools:
 - name: CSS 3
   description: The latest evolution of the Cascading Style Sheets language
@@ -45,3 +45,12 @@ tools:
   sub_category: Version Control System
   image_url: https://img.stackshare.io/service/1046/git.png
   detection_source: Repo Metadata
+- name: HTML
+  description: Hypertext Markup Language for creating web pages.
+  website_url: http://
+  open_source: false
+  hosted_saas: false
+  image_url: https://img.stackshare.io/service/2270/no-img-open-source.png
+  detection_source: SpecRunner.html
+  last_updated_by: th3mon
+  last_updated_on: 2012-10-04 21:29:18.000000000 Z
